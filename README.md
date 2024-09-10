@@ -1,9 +1,11 @@
 Jag har skapat ett Online-Forum med Typescript NextJs
 
-För att köra programmet, kör 
+För att köra programmet
+öppna terminal från src mappen
+kör
 npm i
 
-sedan
+sedan kör
 npm run dev
 
 
