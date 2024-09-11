@@ -1,10 +1,12 @@
 'use Client';
 import React from 'react';
-import Register from '../app/register/page';
+import Navbar from '../components/Navbar';
+import Register from '../register/page';
 
 const RegisterForm = () => {
     return (
       <div className=''>
+        <Navbar />
         <Register/>
       </div>
     )

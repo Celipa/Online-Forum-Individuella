@@ -12,9 +12,11 @@ import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
 import { validate } from './validate'
+import { Modal } from '../components/Modal'
 
 export const Create = () => {
   const [form, setForm] = useState({ title: '', description: '' });
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [error, setError] = useState<ErrorForm>({
     title: '',
     description: '',
@@ -42,7 +44,8 @@ export const Create = () => {
     try {
       const storedUser = localStorage.getItem('User');
       if (!storedUser) {
-        throw new Error('User not found');
+        setIsModalOpen(true); // Show modal if user is not logged in
+        return;
       }
 
       // Parse the string to convert it into a User object
@@ -107,6 +110,11 @@ export const Create = () => {
       {error.selection && <p className='error-message'>{error.selection}</p>}
       {error.description && <p className='error-message'>{error.description}</p>}
     </form>
+    <Modal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        message="You must be logged in to create a thread." 
+      />
   </div>
   )
 }

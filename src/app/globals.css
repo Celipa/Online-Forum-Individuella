@@ -566,7 +566,9 @@ body {
   position: absolute; /* or position: absolute; */
   z-index: 1000; /* Ensure this is higher than other elements */
 }
-
+.category-dropdown:hover {
+  display: block;
+}
 .d-thread-container-bottom-replies{
   display: flex;
   flex-direction: column;

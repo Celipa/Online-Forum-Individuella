@@ -54,11 +54,11 @@ function Thread() {
   const key = "forum/threads";
   const categories = ['Thread', 'QNA', 'General'];
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
-  const [isCategoryDropdownVisible, setIsCategoryDropdownVisible] = useState(false);
-  const inappropriateWords = ['poop',' ', 'ugly',' ', 'shit']; // Add your list of inappropriate words here
+  const [isCategoryDropdownVisible, setIsCategoryDropdownVisible] = useState(true);
+  const inappropriateWords = ['poop', 'ugly', 'shit']; // Add your list of inappropriate words here
 
 
-  const toggleDropdownVisibility = () => {
+  const toggleModeratorButtons = () => {
     setIsDropdownVisible(!isDropdownVisible);
   };
   const containsInappropriateLanguage = (text: string) => {
@@ -309,29 +309,63 @@ function Thread() {
     setData(updatedData);
   };
   const handleCategoryChange = (value: string) => {
-    handleEditThread('category', value);
-    setIsCategoryDropdownVisible(false); // Close the dropdown
+    if (value !== 'QNA') {
+      const updatedComments = data.comments.map((comment) => ({
+        ...comment,
+        isAnswer: false,
+      }));
+
+      const updatedData = { ...data, comments: updatedComments, category: value };
+
+      const localData = localStorage.getItem(key);
+
+      if (localData) {
+        try {
+          const parsedArray = JSON.parse(localData) as Data[];
+          const threadIndex = parsedArray.findIndex(
+            (thread) => thread.id === threadId
+          );
+
+          if (threadIndex !== -1) {
+            parsedArray[threadIndex] = updatedData;
+            localStorage.setItem(key, JSON.stringify(parsedArray));
+          } else {
+            console.error("Thread not found during update.");
+          }
+        } catch (error) {
+          console.error("Failed to update data in localStorage", error);
+        }
+      }
+
+      setData(updatedData);
+    } else {
+      handleEditThread('category', value);
+    }
+    // setIsCategoryDropdownVisible(true); // Close the category dropdown after selecting a category
   };
 
-  const toggleCategoryDropdown = () => {
-    setIsCategoryDropdownVisible(!isCategoryDropdownVisible);
+  const showCategoryDropdown = () => {
+    setIsCategoryDropdownVisible;
   };
+
+  const isThreadOwnerOrModerator = currentUser?.userName === data.creator || currentUser?.isModerator;
 
   return (
-  <div>
+    <div>
       <Navbar />
-    <div className='d-thread'>
-      <div className="d-thread-container">
-      <div className="d-thread-container-top-buttons" onClick={toggleDropdownVisibility}>⚙️
-                {isDropdownVisible && (
-                  <>
-                    <button className="Edit-Title" onClick={() => handleEditThread('title', prompt('Edit Title', data.title) || data.title)}>Edit Title</button>
-                    <button className='Edit-Description' onClick={() => handleEditThread('description', prompt('Edit Description', data.description) || data.description)}>Edit Description</button>
-                    <button className="Select-Category" onClick={toggleCategoryDropdown}>Edit Category</button>
-                    {isCategoryDropdownVisible && (
-                      <Select onValueChange={handleCategoryChange} value={data.category}>
+      <div className='d-thread'>
+        <div className="d-thread-container">
+          {isThreadOwnerOrModerator && (
+            <div className="d-thread-container-top-buttons" onClick={toggleModeratorButtons}>⚙️
+              {isDropdownVisible && (
+                <>
+                  <button className="Edit-Title" onClick={() => handleEditThread('title', prompt('Edit Title', data.title) || data.title)}>Edit Title</button>
+                  <button className='Edit-Description' onClick={() => handleEditThread('description', prompt('Edit Description', data.description) || data.description)}>Edit Description</button>
+                  {isCategoryDropdownVisible && (
+                    <div className="category-dropdown">
+                      <Select onValueChange={handleCategoryChange}>
                         <SelectTrigger className='Category-Edit'>
-                          <SelectValue placeholder="Select a category" />
+                          <SelectValue placeholder="Edit Category" />
                         </SelectTrigger>
                         <SelectContent className='Select-Category'>
                           {categories.map((category) => (
@@ -341,14 +375,16 @@ function Thread() {
                           ))}
                         </SelectContent>
                       </Select>
-                    )}
-                  </>
-                )}
-              </div>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          )}
         <div className="d-thread-container-top">
           <div className="d-thread-container-top-width">
             <span className='d-thread-poster'>{data.creator}</span>
-            <span className='Bad-words'>Inappropriate words: {inappropriateWords}</span>
+            <span className='Bad-words'>Inappropriate words: poop, shit, ugly </span>
             <span className='d-thread-category'>{data.category}</span>
             {(data.creator === currentUser?.userName || currentUser?.isModerator) && (
               <>

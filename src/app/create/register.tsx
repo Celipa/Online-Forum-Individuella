@@ -1,10 +1,10 @@
-// pages/register.tsx
-import React from 'react';
-import Register from '../register/page';
+// // pages/register.tsx
+// import React from 'react';
+// import Register from '../register/page';
 
-const RegisterPage: React.FC = () => {
+// const RegisterPage: React.FC = () => {
 
-  return <Register />;
-};
+//   return <Register />;
+// };
 
-export default RegisterPage;
+// export default RegisterPage;
